@@ -1,0 +1,122 @@
+stringToNumber
+
+```javascript
+function convertStringToNumber(str, radix = 10) {
+            let regex = /[^0-9a-fA-F.]/;
+            if (typeof str !== "string" || regex.test(str) || radix > 16 || radix < 2) {
+                return NaN;
+            }
+
+            let number = 0;
+            let strBeforePoint = "";
+            let strAfterPoint = "";
+            let strBeforeE = "";
+            let strAfterE = "";
+            let regexForE = /[e|E]/;
+            let regexSymbol = /[^0-9+-]|[++|--|+-|-+]|^[0-9]*[+|-]/;
+            if (radix === 10) {
+                let regexForPoint = /\./;
+                if (regexForPoint.test(str)) {
+                    let index = regexForPoint.exec(str).index;
+                    strBeforePoint = str.substr(0, index);
+                    strAfterPoint = str.slice(index + 1);
+                    if (/^00|[^0-9]/.test(strBeforePoint)) {
+                        return NaN;
+                    }
+
+                    for(let i = 0; i < strBeforePoint.length; i++) {
+                        let charCode = str.charCodeAt(i) - '0'.charCodeAt(0);
+                        number *= radix;
+                        number += charCode;
+                    }
+
+                    if (regexForE.test(strAfterPoint)) {
+                        let index = regexForE.exec(strAfterPoint).index;
+                        strBeforeE = strAfterPoint(0, index);
+                        strAfterE = strAfterPoint.slice(index + 1);
+                        if (regexSymbol.test(strBeforeE) || regexSymbol.test(strAfterE)) {
+                            return NaN;
+                        }
+                        let decimals = 1;
+                        for(let i = 0; i < strBeforeE.length; i++) {
+                            let charCode = str.charCodeAt(i) - '0'.charCodeAt(0);
+                            decimals /= radix;
+                            number += decimals * charCode;
+                        }
+                        
+                    } else {
+                        if (/^00|[^0-9]/.test(strAfterPoint)) {
+                            return NaN;
+                        }
+                        let decimals = 1;
+                        for(let i = 0; i < strAfterPoint.length; i++) {
+                            let charCode = str.charCodeAt(i) - '0'.charCodeAt(0);
+                            decimals /= radix;
+                            number += decimals * charCode;
+                        }
+                    }
+                } else if (regexForE.test(str)) {
+                    let index = regexForE.exec(str).index;
+                    strBeforeE = str(0, index);
+                    strAfterE = str.slice(index + 1);
+                    if (regexSymbol.test(strBeforeE) || regexSymbol.test(strAfterE)) {
+                        return NaN;
+                    }
+                }
+
+            } else {
+                for(let i = 0; i < str.length ; i++) {
+                    let charCode = str.charCodeAt(i) - '0'.charCodeAt(0);
+                    switch (str.charAt(i)) {
+                        case 'a':
+                            charCode = 10;
+                            break;
+                        case 'b':
+                            charCode = 11;
+                            break;
+                        case 'c':
+                            charCode = 12;
+                            break;
+                        case 'd':
+                            charCode = 13;
+                            break;
+                        case 'e':
+                            charCode = 14;
+                            break;
+                        case 'f':
+                            charCode = 15;
+                            break;
+                        default:
+                        break;
+                    }
+                    if (charCode >= radix) {
+                        return NaN;
+                    }
+                    number *= radix;
+                    number += charCode;
+                }
+                return number;
+            }
+        }  
+```
+
+
+
+numberToString
+
+```javascript
+function convertNumberToString(number, radix) {
+  let integer = Math.floor(number);
+  let fraction = String(number).match(/\.\d+$/);
+  if (fraction) {
+    fraction = fraction[0].replace('.', '');
+  }
+  let string = '';
+  while (integer > 0) {
+    string = String(integer % radix) + string;
+    integer = Math.floor(integer / radix);
+  }
+  return fraction ? `${string}.${fraction}` : string;
+}
+```
+
